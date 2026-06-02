@@ -1,0 +1,112 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4 mb-5">
+
+    <!-- HEADER -->
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h4 class="fw-bold text-primary mb-0">
+            <i class="fas fa-file-alt me-2"></i> System Reports
+        </h4>
+
+        <a href="{{ url_for('download_csv') }}"
+           class="btn btn-success rounded-pill px-4 shadow-sm fw-bold">
+            <i class="fas fa-download me-2"></i> Export CSV
+        </a>
+    </div>
+
+    <!-- SUMMARY CARDS -->
+    <div class="row g-3 mb-4">
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center p-3">
+                <h6 class="text-muted small">Total Books</h6>
+                <h3 class="fw-bold text-primary mb-0">{{ total_books }}</h3>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center p-3">
+                <h6 class="text-muted small">Available</h6>
+                <h3 class="fw-bold text-success mb-0">
+                    {{ status_data.get('Available', 0) }}
+                </h3>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm text-center p-3">
+                <h6 class="text-muted small">Checked Out</h6>
+                <h3 class="fw-bold text-warning mb-0">
+                    {{ status_data.get('Checked Out', 0) }}
+                </h3>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- BREAKDOWN CARD -->
+    <div class="row">
+        <div class="col-md-6 col-lg-5">
+
+            <div class="card border-0 shadow-sm" style="border-radius: 14px;">
+                <div class="card-body p-4">
+
+                    <h6 class="text-uppercase text-muted fw-bold mb-3"
+                        style="font-size: 0.8rem; letter-spacing: 0.5px;">
+                        Inventory Breakdown
+                    </h6>
+
+                    {% if status_data %}
+                        <ul class="list-group list-group-flush">
+
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 border-bottom">
+                                <span class="fw-bold text-dark">
+                                    <i class="fas fa-layer-group text-primary me-2"></i>
+                                    Total Books
+                                </span>
+                                <span class="badge bg-primary rounded-pill px-3 py-2">
+                                    {{ total_books }}
+                                </span>
+                            </li>
+
+                            {% for status, count in status_data.items() %}
+                            <li class="list-group-item d-flex justify-content-between align-items-center py-3 {% if not loop.last %}border-bottom{% endif %}">
+                                
+                                <span class="fw-bold text-dark">
+                                    {% if status == 'Available' %}
+                                        <i class="fas fa-check-circle text-success me-2"></i>
+                                    {% else %}
+                                        <i class="fas fa-clock text-warning me-2"></i>
+                                    {% endif %}
+                                    {{ status }}
+                                </span>
+
+                                <span class="badge {% if status == 'Available' %}bg-success{% else %}bg-warning text-dark{% endif %} rounded-pill px-3 py-2">
+                                    {{ count }}
+                                </span>
+
+                            </li>
+                            {% endfor %}
+
+                        </ul>
+                    {% else %}
+
+                        <!-- EMPTY STATE -->
+                        <div class="text-center py-4 text-muted">
+                            <i class="fas fa-chart-bar fa-2x mb-2"></i>
+                            <p class="mb-0 small">No report data available</p>
+                        </div>
+
+                    {% endif %}
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

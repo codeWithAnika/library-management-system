@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class="container mt-4 mb-5">
+
+    <!-- HEADER -->
+    <div class="text-center mb-4">
+        <h4 class="fw-bold text-primary">
+            <i class="fas fa-search me-2"></i> Search Books
+        </h4>
+        <p class="text-muted small">Find books instantly by title or author</p>
+    </div>
+
+    <!-- SEARCH BOX -->
+    <div class="card shadow-sm border-0 p-3 mb-4">
+        <input type="text"
+               id="searchBox"
+               class="form-control form-control-lg rounded-pill px-4"
+               placeholder="🔍 Search by title or author...">
+    </div>
+
+    <!-- LOADING -->
+    <div id="loading" class="text-center text-muted d-none">
+        <i class="fas fa-spinner fa-spin me-2"></i> Searching...
+    </div>
+
+    <!-- RESULTS -->
+    <ul id="results" class="list-group shadow-sm"></ul>
+
+    <!-- EMPTY STATE -->
+    <div id="emptyState" class="text-center text-muted mt-4 d-none">
+        <i class="fas fa-book-open fa-2x mb-2"></i>
+        <p class="mb-0">No books found</p>
+    </div>
+
+</div>
+
+<!-- SCRIPT -->
+<script>
+let timeout = null;
+
+document.getElementById("searchBox").addEventListener("keyup", function () {
+    clearTimeout(timeout);
+
+    const query = this.value.trim();
+    const results = document.getElementById("results");
+    const loading = document.getElementById("loading");
+    const emptyState = document.getElementById("emptyState");
+
+    if (query.length === 0) {
+        results.innerHTML = "";
+        emptyState.classList.add("d-none");
+        return;
+    }
+
+    // debounce (300ms)
+    timeout = setTimeout(() => {
+
+        loading.classList.remove("d-none");
+
+        fetch(`/api/search?q=${query}`)
+            .then(res => res.json())
+            .then(data => {
+
+                loading.classList.add("d-none");
+                results.innerHTML = "";
+
+                if (data.length === 0) {
+                    emptyState.classList.remove("d-none");
+                    return;
+                }
+
+                emptyState.classList.add("d-none");
+
+                data.forEach(book => {
+                    results.innerHTML += `
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+
+                            <div>
+                                <strong>${book.title}</strong><br>
+                                <small class="text-muted">by ${book.author}</small>
+                            </div>
+
+                            <span class="badge ${book.status === 'Available' ? 'bg-success' : 'bg-warning text-dark'} rounded-pill">
+                                ${book.status}
+                            </span>
+
+                        </li>
+                    `;
+                });
+
+            })
+            .catch(() => {
+                loading.classList.add("d-none");
+                results.innerHTML = `
+                    <li class="list-group-item text-danger text-center">
+                        Error fetching results
+                    </li>`;
+            });
+
+    }, 300);
+});
+</script>
+
+{% endblock %}

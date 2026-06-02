@@ -1,0 +1,111 @@
+<!-- NAVBAR -->
+<nav class="navbar navbar-expand-lg sticky-top navbar-glass">
+  <div class="container">
+
+    <!-- BRAND -->
+    <a class="navbar-brand d-flex align-items-center fw-bold" href="{{ url_for('home') }}">
+        <i class="fas fa-book-reader me-2 text-primary"></i>
+        <span class="brand-text">LibraryHub</span>
+    </a>
+
+    <!-- TOGGLER -->
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- NAV -->
+    <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
+
+      {% set current = request.endpoint if request.endpoint else '' %}
+
+      {% if session.get('user_id') %}
+
+      <!-- LEFT NAV -->
+      <div class="d-flex align-items-center gap-2 mt-3 mt-lg-0 flex-wrap">
+
+        <a class="nav-pill {% if current=='dashboard' %}active{% endif %}"
+           href="{{ url_for('dashboard') }}">
+            <i class="fas fa-chart-pie me-1"></i> Dashboard
+        </a>
+
+        <a class="nav-pill {% if current=='books' %}active{% endif %}"
+           href="{{ url_for('books') }}">
+            <i class="fas fa-layer-group me-1"></i> Inventory
+        </a>
+
+        <a class="nav-pill {% if current=='search' %}active{% endif %}"
+           href="{{ url_for('search') }}">
+            <i class="fas fa-search me-1"></i> Search
+        </a>
+
+        {% if session.get('role', '')|lower == 'admin' %}
+        <a class="nav-pill primary {% if current=='add_book' %}active{% endif %}"
+           href="{{ url_for('add_book') }}">
+            <i class="fas fa-plus me-1"></i> Add Book
+        </a>
+        {% endif %}
+
+      </div>
+
+      <!-- RIGHT SIDE -->
+      <div class="d-flex align-items-center gap-3 mt-3 mt-lg-0">
+
+        <!-- USER INFO -->
+        <div class="user-box d-flex align-items-center gap-2">
+            <div class="avatar">
+                {{ session.get('name', 'U')[0] }}
+            </div>
+            <div class="d-flex flex-column">
+                <span class="fw-semibold small">{{ session.get('name', 'User') }}</span>
+                {% if session.get('role', '')|lower == 'admin' %}
+                    <span class="badge role-admin">Admin</span>
+                {% else %}
+                    <span class="badge role-user">User</span>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- LOGOUT -->
+        <a class="btn btn-outline-danger rounded-pill px-3 btn-sm" href="{{ url_for('logout') }}">
+            <i class="fas fa-sign-out-alt"></i>
+        </a>
+
+      </div>
+
+      {% else %}
+
+      <!-- NOT LOGGED -->
+      <div class="ms-auto d-flex gap-2 mt-3 mt-lg-0">
+        <a class="btn btn-outline-primary rounded-pill px-4 nav-auth-btn"
+           href="{{ url_for('login') }}">
+            <i class="fas fa-sign-in-alt me-1"></i> Login
+        </a>
+
+        <a class="btn btn-primary rounded-pill px-4 shadow-sm nav-auth-btn"
+           href="{{ url_for('register') }}">
+            <i class="fas fa-user-plus me-1"></i> Register
+        </a>
+      </div>
+
+      {% endif %}
+
+    </div>
+  </div>
+</nav>
+
+<!-- STYLE -->
+<style>
+.navbar-glass { background: rgba(255,255,255,0.85); backdrop-filter: blur(14px); border-bottom: 1px solid rgba(0,0,0,0.05); }
+.brand-text { letter-spacing: 0.3px; font-size: 1.1rem; }
+.nav-pill { padding: 6px 14px; border-radius: 999px; font-size: 0.85rem; text-decoration: none; color: #444; background: #f5f6f8; transition: all 0.25s ease; display: inline-flex; align-items: center; }
+.nav-pill:hover { background: #e9ecef; transform: translateY(-1px); }
+.nav-pill.active { background: linear-gradient(135deg, #4e54c8, #6366f1); color: white !important; box-shadow: 0 4px 12px rgba(78,84,200,0.25); }
+.nav-pill.primary { background: #4e54c8; color: white !important; }
+.nav-pill.primary:hover { background: #3f45b5; }
+.user-box { background: #f8f9fa; padding: 5px 12px; border-radius: 999px; }
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg, #4e54c8, #6366f1); color: white; display: flex; align-items: center; justify-content: center; font-weight: bold; }
+.role-admin { background: rgba(220,53,69,0.1); color: #dc3545; font-size: 0.7rem; }
+.role-user { background: rgba(108,117,125,0.1); color: #6c757d; font-size: 0.7rem; }
+.nav-auth-btn { transition: all 0.25s ease; }
+.nav-auth-btn:hover { transform: translateY(-1px); }
+</style>

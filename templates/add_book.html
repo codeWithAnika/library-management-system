@@ -1,0 +1,136 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<script src="https://unpkg.com/html5-qrcode"></script>
+
+<div class="container mt-4 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            
+            {% if session.get('role') == 'admin' %}
+            <div class="card border-0 shadow-sm" style="border-radius: 12px;">
+                <div class="card-body p-4 p-md-5">
+                    <h4 class="fw-bold text-primary mb-4">
+                        <i class="fas fa-plus-circle me-2"></i>Add a New Book
+                    </h4>
+                    
+                    <form action="/add-book" method="POST">
+
+                        <!-- TITLE -->
+                        <div class="mb-3">
+                            <label class="form-label text-muted fw-bold text-uppercase small">
+                                Book Title
+                            </label>
+                            <input type="text" class="form-control bg-light border-0 px-3 py-2"
+                                   name="title" placeholder="Enter book title" required>
+                        </div>
+
+                        <!-- ISBN -->
+                        <div class="mb-4">
+                            <label class="form-label text-muted fw-bold text-uppercase small">
+                                ISBN Number
+                            </label>
+
+                            <div class="input-group" style="border-radius: 8px; overflow: hidden;">
+                                <input type="text" class="form-control bg-light border-0 px-3 py-2"
+                                       id="isbn" name="isbn" placeholder="Enter or scan ISBN" required>
+
+                                <button class="btn btn-primary px-4 fw-bold" type="button"
+                                        data-bs-toggle="modal" data-bs-target="#scannerModal">
+                                    <i class="fas fa-camera me-1"></i> Scan
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- SUBMIT -->
+                        <button type="submit"
+                                class="btn btn-primary w-100 rounded-pill fw-bold py-2 mt-2 shadow-sm">
+                            Add to Inventory
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            {% else %}
+            <!-- ACCESS DENIED -->
+            <div class="card border-0 shadow-sm text-center py-5" style="border-radius: 12px;">
+                <div class="card-body px-4">
+                    <div class="bg-danger bg-opacity-10 text-danger rounded-circle d-flex align-items-center justify-content-center mx-auto mb-4"
+                         style="width: 80px; height: 80px;">
+                        <i class="fas fa-lock fa-3x"></i>
+                    </div>
+                    <h3 class="fw-bold text-dark mb-3">Access Denied</h3>
+                    <p class="text-muted mb-4">
+                        You do not have administrator privileges to add books.
+                    </p>
+                    <a href="/dashboard"
+                       class="btn btn-primary rounded-pill px-4 py-2 fw-bold shadow-sm">
+                        Return to Dashboard
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+        </div>
+    </div>
+</div>
+
+<!-- SCANNER MODAL -->
+<div class="modal fade" id="scannerModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow" style="border-radius: 15px; overflow: hidden;">
+
+      <div class="modal-header bg-light border-0">
+        <h5 class="modal-title fw-bold text-primary">
+            <i class="fas fa-barcode me-2"></i>Scan ISBN Barcode
+        </h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body text-center p-0">
+        <div id="reader" style="width: 100%; min-height: 300px;"></div>
+      </div>
+
+      <div class="modal-footer border-0 bg-light">
+        <button type="button" class="btn btn-secondary rounded-pill px-4"
+                data-bs-dismiss="modal">
+            Cancel
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- SCANNER SCRIPT -->
+<script>
+let scanner;
+
+document.getElementById('scannerModal').addEventListener('shown.bs.modal', function () {
+    scanner = new Html5QrcodeScanner("reader", {
+        fps: 10,
+        qrbox: { width: 250, height: 150 }
+    });
+
+    scanner.render(onScanSuccess);
+});
+
+document.getElementById('scannerModal').addEventListener('hidden.bs.modal', function () {
+    if (scanner) {
+        scanner.clear().catch(err => console.log(err));
+    }
+});
+
+function onScanSuccess(decodedText) {
+    document.getElementById('isbn').value = decodedText;
+
+    if (scanner) {
+        scanner.clear();
+    }
+
+    let modal = bootstrap.Modal.getInstance(document.getElementById('scannerModal'));
+    modal.hide();
+}
+</script>
+
+{% endblock %}

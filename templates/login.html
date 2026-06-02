@@ -1,0 +1,147 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<style>
+@keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.hero-bg {
+    background: linear-gradient(-45deg, #4e54c8, #8f94fb, #2bc0e4, #eaecc6);
+    background-size: 400% 400%;
+    animation: gradientBG 15s ease infinite;
+    border-radius: 30px;
+}
+
+.glass-card {
+    background: rgba(255, 255, 255, 0.25);
+    backdrop-filter: blur(18px);
+    border-radius: 25px;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+}
+
+.hero-title {
+    font-weight: 700;
+}
+
+.form-control:focus {
+    box-shadow: none;
+    border-color: #4e54c8;
+}
+
+.login-btn {
+    background: linear-gradient(135deg, #2bc0e4, #4e54c8);
+    border: none;
+    transition: 0.3s ease;
+}
+
+.login-btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+</style>
+
+<div class="container-fluid py-5 my-4 hero-bg">
+
+    <div class="row justify-content-center align-items-center" style="min-height: 65vh;">
+        <div class="col-md-6 col-lg-4">
+
+            <div class="glass-card text-center p-4 p-md-5">
+
+                <!-- ICON -->
+                <div class="mb-4">
+                    <i class="fas fa-user-circle fa-4x text-primary"></i>
+                </div>
+
+                <!-- TITLE -->
+                <h2 class="hero-title mb-3">Welcome Back</h2>
+                <p class="text-muted small mb-4">Login to continue to your dashboard</p>
+
+                <!-- FLASH MESSAGES -->
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                  {% if messages %}
+                    {% for category, message in messages %}
+                      <div class="alert alert-{{ category }} text-start small py-2">
+                        {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <!-- FORM -->
+                <form action="{{ url_for('login') }}" method="POST">
+
+                    <!-- EMAIL -->
+                    <div class="form-floating mb-3">
+                        <input type="email" class="form-control rounded-pill px-4"
+                               name="email" placeholder="Email Address" required>
+                        <label>Email Address</label>
+                    </div>
+
+                    <!-- PASSWORD -->
+                    <div class="form-floating mb-3 position-relative">
+                        <input type="password" class="form-control rounded-pill px-4"
+                               id="password" name="password" placeholder="Password" required>
+                        <label>Password</label>
+
+                        <!-- SHOW PASSWORD -->
+                        <span onclick="togglePassword()" 
+                              style="position:absolute; right:20px; top:50%; transform:translateY(-50%); cursor:pointer;">
+                            <i id="eyeIcon" class="fas fa-eye"></i>
+                        </span>
+                    </div>
+
+                    <!-- REMEMBER -->
+                    <div class="form-check text-start mb-3">
+                        <input class="form-check-input" type="checkbox" name="remember">
+                        <label class="form-check-label text-muted">
+                            Remember Me
+                        </label>
+                    </div>
+
+                    <!-- BUTTON -->
+                    <button type="submit"
+                        class="btn login-btn btn-lg w-100 rounded-pill shadow fw-bold py-3">
+                        Login to System
+                    </button>
+
+                </form>
+
+                <!-- LINK -->
+                <div class="mt-4 pt-3 border-top">
+                    <p class="text-muted mb-0 small">
+                        New here?
+                        <a href="/register" class="fw-bold text-primary text-decoration-none">
+                            Create an account
+                        </a>
+                    </p>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- SCRIPT -->
+<script>
+function togglePassword() {
+    const password = document.getElementById("password");
+    const eyeIcon = document.getElementById("eyeIcon");
+
+    if (password.type === "password") {
+        password.type = "text";
+        eyeIcon.classList.remove("fa-eye");
+        eyeIcon.classList.add("fa-eye-slash");
+    } else {
+        password.type = "password";
+        eyeIcon.classList.remove("fa-eye-slash");
+        eyeIcon.classList.add("fa-eye");
+    }
+}
+</script>
+
+{% endblock %}
